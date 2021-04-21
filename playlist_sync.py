@@ -46,10 +46,12 @@ ytm = YTMusic('headers_auth.json')
 
    
 ### get all songs in the cloud
-songDict = ytm.get_library_songs(limit=100000)
+songDict = ytm.get_library_upload_songs(100000)
+print(str(songDict))
 
 ### find all cloud playlists
-all_pls = ytm.get_library_playlists(limit=1000)
+all_pls = ytm.get_library_playlists(1000)
+print(str(all_pls))
 
 ### compare and find playlists we need to create
 need_to_create_name = [0] * 1000
@@ -65,10 +67,9 @@ while (cnt <= (len(local_pls_name))) and (local_pls_name[cnt] != 0):
     test_local = re.sub(r'.m3u', '', test_local)
     file_local = str(local_pls_file[cnt])
     for p in all_pls:
-        if(p['type'] == 'USER_GENERATED'):
-            if str(p['name']) == test_local:
-                found = 1
-                break
+        if str(p['title']) == test_local:
+            found = 1
+            break
     if found == 0:
         print("Playlist " + test_local + " does not exist in Youtube Music")
         need_to_create_name[found_count] = test_local
@@ -113,7 +114,7 @@ while (cnt <= len(need_to_read_file)) and (need_to_read_file[cnt] != 0 and os.pa
                     check_title_list = mp3["title"]
                     check_title = check_title_list.pop()
                     try :
-                        check_tile = check_title.encode('ascii', 'ignore').decode('ascii')
+                        check_title = check_title.encode('ascii', 'ignore').decode('ascii')
                     except:
                         check_title = ''
                     if type(check_title) == 'unicode':
@@ -135,32 +136,34 @@ while (cnt <= len(need_to_read_file)) and (need_to_read_file[cnt] != 0 and os.pa
                 # scan entire songDict by name to find song_id
                 sd_find = 0
                 for sd in songDict:
-                    if sd['title'] == check_title and sd['artist'] == check_artist:
-                        if check_album:
-                            #print "comparing " + str(sd['album']) + " to find " + str(check_album)
-                            if sd['album'] == check_album:
-                                # try to use album match
-                                pl_songs.append(sd["id"])
+                    if sd['title'] == check_title and sd['artist']:
+                        if sd['artist'][0]['name'] == check_artist:
+                            if check_album and sd['album']:
+                                print("album " + str(sd['album']))
+                                print("comparing " + str(sd['album']['name']) + " to find " + str(check_album))
+                                if sd['album']['name'] == check_album:
+                                    # try to use album match
+                                    pl_songs.append(sd['videoId'])
+                                    sd_find = 1
+                                    break
+                            else:
+                                # we assume if the title and artist match, that's the song we're looking for
+                                # if this is too general adding "album" as an additional condition for match makes sense
+                                pl_songs.append(sd['videoId'])
                                 sd_find = 1
                                 break
-                        else:
-                            # we assume if the title and artist match, that's the song we're looking for
-                            # if this is too general adding "album" as an additional condition for match makes sense
-                            pl_songs.append(sd["id"])
-                            sd_find = 1
-                            break
                 if not sd_find:
                     print("Could not find " + check_title + " by " + check_artist)
             line = f.readline()
         
     # create new playlist
     print('creating playlist ' + str(need_to_create_name[cnt]))
-    playlist_id = mc.create_playlist(str(need_to_create_name[cnt]))
+    playlist_id = ytm.create_playlist(str(need_to_create_name[cnt]),str(need_to_create_name[cnt]))
     # run through list of songs and add each song_id
     song_cnt = 0
     while(song_cnt < len(pl_songs)-1):
         try:
-            mc.add_songs_to_playlist(playlist_id, str(pl_songs[song_cnt]))
+            mc.add_playlist_items(playlist_id, str(pl_songs[song_cnt]))
             song_cnt += 1
         except:
             next
