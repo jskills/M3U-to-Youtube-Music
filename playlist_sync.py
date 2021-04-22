@@ -141,6 +141,9 @@ while (cnt <= len(need_to_read_file)) and (need_to_read_file[cnt] != 0 and os.pa
                 searchFor += check_title
                 print("Querying YTMusic for : " + searchFor)
                 songDict = list()
+                # TODO : add multiple searches with different formats 
+                # with artist or album or without
+                # combine results into one dict
                 try: 
                     songDict = ytm.search(searchFor, 'uploads', limit=40)
                 except:
