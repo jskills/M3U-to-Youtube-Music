@@ -46,12 +46,11 @@ ytm = YTMusic('headers_auth.json')
 
    
 ### get all songs in the cloud
-songDict = ytm.get_library_upload_songs(100000)
-print(str(songDict))
+# long wait time for this :(
+#libraryDict = ytm.get_library_upload_songs(100000)
 
 ### find all cloud playlists
 all_pls = ytm.get_library_playlists(1000)
-print(str(all_pls))
 
 ### compare and find playlists we need to create
 need_to_create_name = [0] * 1000
@@ -106,6 +105,8 @@ while (cnt <= len(need_to_read_file)) and (need_to_read_file[cnt] != 0 and os.pa
                     mp3 = EasyID3(file_lookup)
                 except:
                     print('Cannot extract mp3 tags from ' + file_lookup)
+                    line = None
+                    continue
                 #print(EasyID3.valid_keys.keys())
                 check_title = ''
                 check_artist = ''
@@ -133,23 +134,39 @@ while (cnt <= len(need_to_read_file)) and (need_to_read_file[cnt] != 0 and os.pa
                         except:
                             check_album = ''
 
-                # scan entire songDict by name to find song_id
+                # search for song in Youtube Music
+                searchFor = check_artist + " - " 
+                if check_album:
+                    searchFor += check_album + " - "
+                searchFor += check_title
+                print("Querying YTMusic for : " + searchFor)
+                songDict = list()
+                try: 
+                    songDict = ytm.search(searchFor, 'uploads', limit=40)
+                except:
+                    print("Failed search for : " + searchFor) 
+
+                print(str(songDict))
+
+                # scan songDict to find song's id (videoID in YTM)
                 sd_find = 0
                 for sd in songDict:
-                    if sd['title'] == check_title and sd['artist']:
-                        if sd['artist'][0]['name'] == check_artist:
+                    if sd['resultType'] == 'song' and sd['title'] == check_title and sd['artist']:
+                        if sd['artist']['name'] == check_artist:
+                            print("id : " + str(sd['videoId']))
+                            print("artist : " + str(sd['artist']))
+                            print("song : " + str(sd['title']))
                             if check_album and sd['album']:
                                 print("album " + str(sd['album']))
                                 print("comparing " + str(sd['album']['name']) + " to find " + str(check_album))
                                 if sd['album']['name'] == check_album:
                                     # try to use album match
-                                    pl_songs.append(sd['videoId'])
+                                    pl_songs.append(str(sd['videoId']))
                                     sd_find = 1
                                     break
                             else:
-                                # we assume if the title and artist match, that's the song we're looking for
-                                # if this is too general adding "album" as an additional condition for match makes sense
-                                pl_songs.append(sd['videoId'])
+                                # the title and artist match and album is blank 
+                                pl_songs.append(str(sd['videoId']))
                                 sd_find = 1
                                 break
                 if not sd_find:
@@ -159,15 +176,9 @@ while (cnt <= len(need_to_read_file)) and (need_to_read_file[cnt] != 0 and os.pa
     # create new playlist
     print('creating playlist ' + str(need_to_create_name[cnt]))
     playlist_id = ytm.create_playlist(str(need_to_create_name[cnt]),str(need_to_create_name[cnt]))
-    # run through list of songs and add each song_id
-    song_cnt = 0
-    while(song_cnt < len(pl_songs)-1):
-        try:
-            mc.add_playlist_items(playlist_id, str(pl_songs[song_cnt]))
-            song_cnt += 1
-        except:
-            next
-    print(str(song_cnt) + " songs added ...")
+    plResponse = ytm.add_playlist_items(playlist_id, pl_songs)
+    print(str(plResponse))
+    print(str(len(pl_songs)) + " songs added ...")
 
     cnt += 1
 
