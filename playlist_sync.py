@@ -166,7 +166,6 @@ while (cnt <= len(need_to_read_file)) and (need_to_read_file[cnt] != 0 and os.pa
                 # my personal issue
                 #file_lookup = re.sub(playlist_dir, '', file_lookup)
                 # get all mp3 tag data
-                #print('Getting MP3 tags for : ' + file_lookup)
                 mp3 = []
                 mp3 = mp3tags(file_lookup)
                 if not mp3:
@@ -238,7 +237,6 @@ while (cnt <= len(need_to_read_file)) and (need_to_read_file[cnt] != 0 and os.pa
                 songDict.extend(songDict2)
                 songDict.extend(songDict3)
 
-                #print(str(songDict))
 
                 # scan songDict to find song's id (videoID in YTM)
                 sd_find = 0
@@ -265,8 +263,11 @@ while (cnt <= len(need_to_read_file)) and (need_to_read_file[cnt] != 0 and os.pa
         
     # create new playlist
     print('creating playlist ' + str(need_to_create_name[cnt]))
-    playlist_id = ytm.create_playlist(str(need_to_create_name[cnt]),str(need_to_create_name[cnt]))
-    plResponse = ytm.add_playlist_items(playlist_id, pl_songs, duplicates=False)
+    playlist_id = ytm.create_playlist(title=str(need_to_create_name[cnt]),
+                                      description=str(need_to_create_name[cnt]),
+                                      privacy_status="PUBLIC",
+                                      video_ids=pl_songs)
+    print("Created playlist ID : " + str(playlist_id))
     print(str(len(pl_songs)) + " songs added, out of " + str(songCount) + " we got MP3 tags for ...")
 
     cnt += 1
