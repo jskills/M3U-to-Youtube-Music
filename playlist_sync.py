@@ -92,7 +92,7 @@ def mp3tags(songFile):
         audiofile = eyed3.load(songFile)
     except:
         return None
-    songDict['title'] = audiofile.tag.title
+    songDict['title'] = audiofile.tag.title if audiofile else None
     if not songDict['title']:
         return None
     else:
