@@ -13,8 +13,6 @@ This is quick and dirty script you can run regularly to:
 You'll need to go through initial steps to authenticate with Google to ensure it sees your script as one of your authorized devices.  These steps are in the first part of the script.
 
 ### TO DO:
-  - WRITE ALL OF THE ACTUAL CODE FOR THIS
-  
   - ability to prompt user for Y/N as to whether to import each playlist in "all" mode
   - functionality to examine existing Youtube Music playlists and update them if changes have been made to local m3u versions
   - added comparison criteria for mp3 key "album" to further ensure we're looking up the right version of the song for a given artist
