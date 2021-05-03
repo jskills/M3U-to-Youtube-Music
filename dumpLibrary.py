@@ -2,7 +2,7 @@
 
 from ytmusicapi.ytmusic import YTMusic
 
-songLimit = 10
+songLimit = 100000
 
 ytm = YTMusic('headers_auth.json')
 
