@@ -241,8 +241,8 @@ while (cnt <= len(need_to_read_file)) and (need_to_read_file[cnt] != 0 and os.pa
                 # scan songDict to find song's id (videoID in YTM)
                 sd_find = 0
                 for sd in songDict:
-                    if sd['resultType'] == 'song' and sd['title'] == check_title and sd['artist']:
-                        if sd['artist']['name'] == check_artist:
+                    if sd['resultType'] == 'song' and sd['title'] == check_title and sd['artists']:
+                        if sd['artists'][0]['name'] == check_artist:
                             if check_album and sd['album']:
                                 if sd['album']['name'] == check_album:
                                     # try to use album match
