@@ -6,6 +6,7 @@ import re
 import string
 import eyed3
 from unidecode import unidecode
+from configparser import ConfigParser
 
 
 # API to interface with Youtube Music API
@@ -15,10 +16,25 @@ from ytmusicapi.ytmusic import YTMusic
 from mutagen.easyid3 import EasyID3
 # https://code.google.com/archive/p/mutagen/wikis/Tutorial.wiki
 
-# the directory where your .m3u playlists live
-playlist_dir = '/media/jskills/Toshiba-2TB/'
 
 ###################
+
+def config(filename, section):
+        filename = os.getcwd() + '/' + filename
+        parser = ConfigParser()
+        parser.read(filename)
+
+        conf = {}
+        if parser.has_section(section):
+                params = parser.items(section)
+                for param in params:
+                        conf[param[0]] = param[1]
+        else:
+                raise Exception('Section {0} not found in the {1} file'.format(section, filename))
+        return conf
+
+###
+
 
 def normalizeUnicode(s):
     s = unidecode(s)
@@ -138,6 +154,10 @@ def mp3tags(songFile):
 ### Main ###
 
 playlist_file =  sys.argv[1]
+
+# the directory where your .m3u playlists live
+params = config('music.ini', 'music')
+playlist_dir = params['dir']
 
 # authenticate w Youtube Music
 ytm = YTMusic('headers_auth.json')
