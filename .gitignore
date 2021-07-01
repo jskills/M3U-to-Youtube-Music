@@ -133,3 +133,7 @@ backup/
 
 # Youtube Music Auth info
 headers_auth.json
+
+# ini files
+music.ini
+db.ini
