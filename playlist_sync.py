@@ -245,13 +245,13 @@ while (cnt <= len(need_to_read_file)) and (need_to_read_file[cnt] != 0 and os.pa
                 if check_album:
                     searchFor1 += check_album + " - "
                     searchFor1 += check_title
-                    songDict1 = ytm.search(searchFor1, 'uploads', limit=40)
+                    #songDict1 = ytm.search(searchFor1, scope='uploads', limit=40)
 
                 searchFor2 = check_artist + " - " + check_title
-                songDict2 = ytm.search(searchFor2, 'uploads', limit=40)
+                songDict2 = ytm.search(searchFor2, scope='uploads', limit=40)
 
                 searchFor3 = check_title
-                songDict3 = ytm.search(searchFor3, 'uploads', limit=40)
+                songDict3 = ytm.search(searchFor3, scope='uploads', limit=40)
 
                 songDict.extend(songDict1)
                 songDict.extend(songDict2)
