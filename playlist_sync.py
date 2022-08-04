@@ -263,13 +263,14 @@ while (cnt <= len(need_to_read_file)) and (need_to_read_file[cnt] != 0 and os.pa
                 for sd in songDict:
                     if sd['resultType'] == 'song' and sd['title'] == check_title and sd['artists']:
                         if sd['artists'][0]['name'] == check_artist:
-                            if check_album and sd['album']:
-                                if sd['album']['name'] == check_album:
-                                    # try to use album match
-                                    if(sd['videoId']):
-                                        pl_songs.append(str(sd['videoId']))
-                                        sd_find = 1
-                                        break
+                            if 'album' in sd.keys():
+                                if check_album and sd['album']:
+                                    if sd['album']['name'] == check_album:
+                                        # try to use album match
+                                        if(sd['videoId']):
+                                            pl_songs.append(str(sd['videoId']))
+                                            sd_find = 1
+                                            break
                             else:
                                 # the title and artist match and album is blank 
                                 if(sd['videoId']):
