@@ -152,8 +152,12 @@ def mp3tags(songFile):
 
 
 ### Main ###
-
-playlist_file =  sys.argv[1]
+playlist_file = None
+if len(sys.argv) > 1:
+    playlist_file =  sys.argv[1]
+else:
+    print("Usage: python playlist_sync.py [playlist_file_name.m3u]")
+    exit()
 
 # the directory where your .m3u playlists live
 params = config('music.ini', 'music')
